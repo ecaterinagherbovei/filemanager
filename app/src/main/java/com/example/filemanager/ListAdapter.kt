@@ -30,6 +30,4 @@ internal class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     }
 
     override fun getItemCount(): Int = items.size
-
-
 }

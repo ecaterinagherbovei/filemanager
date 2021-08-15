@@ -38,8 +38,8 @@ class AllFilesFragment : Fragment() {
         return view
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val items = mutableListOf<ListModel>()
         File("/system/").walkTopDown().forEach {
             var name: String = it.name
@@ -52,5 +52,4 @@ class AllFilesFragment : Fragment() {
         adapter.replaceItems(items)
         binding.recyclerView.adapter = adapter
     }
-
 }
