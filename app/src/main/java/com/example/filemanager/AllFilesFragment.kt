@@ -1,9 +1,13 @@
 package com.example.filemanager
 
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getExternalFilesDirs
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,11 +18,7 @@ import java.io.File
 class AllFilesFragment : Fragment() {
     private lateinit var adapter: ListAdapter
     private var _binding: FragmentAllFilesBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-    val filesList = mutableListOf<ListModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +38,15 @@ class AllFilesFragment : Fragment() {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val items = mutableListOf<ListModel>()
-        File("/system/").walkTopDown().forEach {
-            var name: String = it.name
-            items.add(ListModel(name))
+        val path = Environment.getRootDirectory().absolutePath
+        File(path).walkBottomUp().forEach {
+            items.add(ListModel(it.name))
         }
+
         adapter = ListAdapter()
         val layoutManager = LinearLayoutManager(context)
         binding.recyclerView.layoutManager = layoutManager
