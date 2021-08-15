@@ -21,7 +21,7 @@ internal class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.name.text = item.setGetName
+        holder.name.text = item.fileName
     }
 
     fun replaceItems(items: List<ListModel>) {
