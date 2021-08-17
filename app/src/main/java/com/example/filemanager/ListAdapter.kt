@@ -6,7 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-internal class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+internal class ListAdapter(private val itemClickListener: ItemClickListener) :
+    RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     private var items = listOf<ListModel>()
 
     internal inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -22,6 +23,9 @@ internal class ListAdapter : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.name.text = item.fileName
+        holder.itemView.setOnClickListener {
+            itemClickListener.onItemClickListener()
+        }
     }
 
     fun replaceItems(items: List<ListModel>) {

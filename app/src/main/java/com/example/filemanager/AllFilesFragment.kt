@@ -6,6 +6,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.filemanager.databinding.FragmentAllFilesBinding
 import java.io.File
 
-class AllFilesFragment : Fragment() {
+class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
     private var _binding: FragmentAllFilesBinding? = null
     private val binding get() = _binding!!
@@ -45,11 +46,15 @@ class AllFilesFragment : Fragment() {
             items.add(ListModel(it.name))
         }
 
-        adapter = ListAdapter()
+        adapter = ListAdapter(this)
         val layoutManager = LinearLayoutManager(context)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
         adapter.replaceItems(items)
         binding.recyclerView.adapter = adapter
+    }
+
+    override fun onItemClickListener() {
+        Toast.makeText(context,"Item clicked", Toast.LENGTH_SHORT).show()
     }
 }
