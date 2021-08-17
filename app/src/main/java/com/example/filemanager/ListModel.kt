@@ -1,3 +1,7 @@
 package com.example.filemanager
 
-class ListModel(val fileName: String?) {}
+data class ListModel(
+    val icon: Int?,
+    val fileName: String?,
+    val additionalInfo: String?
+)
