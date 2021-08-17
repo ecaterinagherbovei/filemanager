@@ -58,7 +58,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     @RequiresApi(Build.VERSION_CODES.R)
     private fun fetchList(): ArrayList<ListModel> {
         val list = arrayListOf<ListModel>()
-        val path = Environment.getRootDirectory().absolutePath
+        val path = Environment.getStorageDirectory().absolutePath
         var icon : Int
         File(path).walk().forEach {
             if (it.isDirectory){
