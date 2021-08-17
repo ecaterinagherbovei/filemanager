@@ -7,11 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getExternalFilesDirs
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.filemanager.databinding.FragmentAllFilesBinding
 import java.io.File
 
@@ -43,7 +41,7 @@ class AllFilesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val items = mutableListOf<ListModel>()
         val path = Environment.getRootDirectory().absolutePath
-        File(path).walkBottomUp().forEach {
+        File(path).walk().forEach {
             items.add(ListModel(it.name))
         }
 
