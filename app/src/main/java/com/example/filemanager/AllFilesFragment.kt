@@ -38,7 +38,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         return view
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    //@RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,10 +54,13 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun fetchList(): ArrayList<ListModel> {
-        val list = arrayListOf<ListModel>()
-        val path = Environment.getStorageDirectory().absolutePath
+    private fun fetchList(): MutableList<ListModel> {
+        val list = mutableListOf<ListModel>()
+        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.getStorageDirectory().absolutePath
+        } else {
+            TODO("VERSION.SDK_INT < R")
+        }
         var icon : Int
         File(path).walk().forEach {
             if (it.isDirectory){

@@ -11,15 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 
 internal class ListAdapter(
     private val context: Context,
-    private val list: ArrayList<ListModel>,
+    private val list: MutableList<ListModel>,
     private val itemClickListener: ItemClickListener
 ) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     internal inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var fileName: TextView = view.findViewById(R.id.fileName)
-        var icon: ImageView = view.findViewById(R.id.icon)
-        var additionalInfo: TextView = view.findViewById(R.id.additionalInfo)
+        val fileName: TextView = view.findViewById(R.id.fileName)
+        val icon: ImageView = view.findViewById(R.id.icon)
+        val additionalInfo: TextView = view.findViewById(R.id.additionalInfo)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,7 +30,7 @@ internal class ListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
-        holder.icon.setImageDrawable(item.icon?.let { ContextCompat.getDrawable(context, it) })
+        holder.icon.setImageDrawable(ContextCompat.getDrawable(context, item.icon!!))
         holder.fileName.text = item.fileName
         holder.additionalInfo.text = item.additionalInfo
         holder.itemView.setOnClickListener {
