@@ -7,18 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
-import java.util.ArrayList
 import com.example.filemanager.databinding.FragmentAllFilesBinding
+import java.io.File
 
 class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
-    private lateinit var binding : FragmentAllFilesBinding
+    private lateinit var binding: FragmentAllFilesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +36,6 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         return view
     }
 
-    //@RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,14 +56,14 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.getStorageDirectory().absolutePath
         } else {
-            TODO("VERSION.SDK_INT < R")
+            Environment.getExternalStorageDirectory().absolutePath
         }
-        var icon : Int
+        var icon: Int
         File(path).walk().forEach {
-            if (it.isDirectory){
+            if (it.isDirectory) {
                 icon = R.drawable.folder_icon
                 list.add(ListModel(icon, it.name, it.usableSpace.toString()))
-            }else if (it.isFile){
+            } else if (it.isFile) {
                 icon = R.drawable.file_icon
                 list.add(ListModel(icon, it.name, it.usableSpace.toString()))
             }

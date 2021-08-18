@@ -17,11 +17,10 @@ internal class ListAdapter(
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
     internal inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fileName: TextView = view.findViewById(R.id.fileName)
-        val icon: ImageView = view.findViewById(R.id.icon)
-        val additionalInfo: TextView = view.findViewById(R.id.additionalInfo)
+        val fileName = view.findViewById<TextView>(R.id.fileName)
+        val icon = view.findViewById<ImageView>(R.id.icon)
+        val additionalInfo = view.findViewById<TextView>(R.id.additionalInfo)
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_of_files, parent, false)
@@ -38,7 +37,5 @@ internal class ListAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return list.count()
-    }
+    override fun getItemCount() = list.size
 }
