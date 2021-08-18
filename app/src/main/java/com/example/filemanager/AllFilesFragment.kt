@@ -18,8 +18,7 @@ import com.example.filemanager.databinding.FragmentAllFilesBinding
 
 class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
-    private var _binding: FragmentAllFilesBinding ? = null
-    private val binding get() = _binding!!
+    private lateinit var binding : FragmentAllFilesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +33,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAllFilesBinding.inflate(inflater, container, false)
+        binding = FragmentAllFilesBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
     }
