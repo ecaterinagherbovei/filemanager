@@ -6,17 +6,17 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.filemanager.databinding.FragmentAllFilesBinding
 import java.io.File
 
-class AllFilesFragment : Fragment() {
+class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
-    private var _binding: FragmentAllFilesBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentAllFilesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,25 +31,47 @@ class AllFilesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentAllFilesBinding.inflate(inflater, container, false)
+        binding = FragmentAllFilesBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val items = mutableListOf<ListModel>()
-        val path = Environment.getRootDirectory().absolutePath
-        File(path).walk().forEach {
-            items.add(ListModel(it.name))
-        }
 
-        adapter = ListAdapter()
         val layoutManager = LinearLayoutManager(context)
+        adapter = ListAdapter(requireContext(), fetchList(), this)
         binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.itemAnimator = DefaultItemAnimator()
-        adapter.replaceItems(items)
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                RecyclerView.VERTICAL
+            )
+        )
+    }
+
+    private fun fetchList(): MutableList<ListModel> {
+        val list = mutableListOf<ListModel>()
+        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.getStorageDirectory().absolutePath
+        } else {
+            Environment.getExternalStorageDirectory().absolutePath
+        }
+        var icon: Int
+        File(path).walk().forEach {
+            if (it.isDirectory) {
+                icon = R.drawable.folder_icon
+                list.add(ListModel(icon, it.name, it.usableSpace.toString()))
+            } else if (it.isFile) {
+                icon = R.drawable.file_icon
+                list.add(ListModel(icon, it.name, it.usableSpace.toString()))
+            }
+        }
+        return list
+    }
+
+    override fun onItemClickListener() {
+        Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
     }
 }

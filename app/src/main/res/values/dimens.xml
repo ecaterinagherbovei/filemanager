@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="common_10dp">10dp</dimen>
+    <dimen name="list_item_image_width_height">30dp</dimen>
+    <dimen name="common_5dp">5dp</dimen>
+</resources>
