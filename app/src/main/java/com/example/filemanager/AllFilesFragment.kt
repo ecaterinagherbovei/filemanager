@@ -3,6 +3,7 @@ package com.example.filemanager
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.DIRECTORY_DCIM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +55,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     private fun fetchList(): MutableList<ListModel> {
         val list = mutableListOf<ListModel>()
         val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.getStorageDirectory().absolutePath
+            context?.getExternalFilesDir(null)?.absolutePath
         } else {
             Environment.getExternalStorageDirectory().absolutePath
         }
