@@ -1,6 +1,5 @@
 package com.example.filemanager
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class ListAdapter(
-    private val context: Context,
     private val itemClickListener: ItemClickListener
 ) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
-    private val list = mutableListOf<ListModel>()
+    private val files = mutableListOf<ListModel>()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val fileName = view.findViewById<TextView>(R.id.fileName)
@@ -29,13 +27,11 @@ class ListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
+        val item = files[position]
+        val fileIconRes = if (item.file.isDirectory) R.drawable.folder_icon else R.drawable.file_icon
 
-        if (item.file.isDirectory) {
-            holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.folder_icon))
-        } else if (item.file.isFile) {
-            holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.file_icon))
-        }
+        holder.icon.setImageDrawable(ContextCompat.getDrawable(holder.itemView.context, fileIconRes))
+
         holder.fileName.text = item.file.name
         holder.additionalInfo.text = item.file.totalSpace.toString()
 
@@ -44,11 +40,11 @@ class ListAdapter(
         }
     }
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = files.size
 
     fun setFiles(files: List<ListModel>) {
-        list.clear()
-        list.addAll(files)
+        this.files.clear()
+        this.files.addAll(files)
         notifyDataSetChanged()
     }
 }

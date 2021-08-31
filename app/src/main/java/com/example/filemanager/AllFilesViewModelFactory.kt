@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 class AllFilesViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AllFilesViewModel::class.java)) {
-            return AllFilesViewModel(context) as T
+            return AllFilesViewModel() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

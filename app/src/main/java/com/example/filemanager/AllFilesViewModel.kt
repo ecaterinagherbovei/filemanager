@@ -1,34 +1,24 @@
 package com.example.filemanager
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Environment
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.io.File
 
-class AllFilesViewModel(
-    @SuppressLint("StaticFieldLeak")
-    private val context: Context
-) : ViewModel() {
+class AllFilesViewModel() : ViewModel() {
 
     val files = MutableLiveData<List<ListModel>>()
 
+    @RequiresApi(Build.VERSION_CODES.R)
     fun fetchFiles() {
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            System.getenv("EXTERNAL_STORAGE")
-        } else {
-            Environment.getExternalStorageDirectory().absolutePath
-        }
-        //Log.d("ENV_VARS", System.getenv().toString())
-
-        if (path == null) return
-        //Log.d("PATH", path)
+        val path = Environment.getExternalStorageDirectory().absolutePath ?: return
+        Log.d("PATH", path)
         val files2 = File(path).listFiles()?.map {
             ListModel(it)
         } ?: emptyList()
         files.postValue(files2)
-        //Log.d("FILE", files2.toString())
     }
 }
