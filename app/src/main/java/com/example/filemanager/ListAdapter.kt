@@ -1,6 +1,5 @@
 package com.example.filemanager
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,18 +8,18 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-internal class ListAdapter(
-    private val context: Context,
-    private val list: MutableList<ListModel>,
+class ListAdapter(
     private val itemClickListener: ItemClickListener
-) :
-    RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
 
-    internal inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private val files = mutableListOf<ListModel>()
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val fileName = view.findViewById<TextView>(R.id.fileName)
         val icon = view.findViewById<ImageView>(R.id.icon)
         val additionalInfo = view.findViewById<TextView>(R.id.additionalInfo)
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_of_files, parent, false)
@@ -28,14 +27,24 @@ internal class ListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        holder.icon.setImageDrawable(ContextCompat.getDrawable(context, item.icon!!))
-        holder.fileName.text = item.fileName
-        holder.additionalInfo.text = item.additionalInfo
+        val item = files[position]
+        val fileIconRes = if (item.file.isDirectory) R.drawable.folder_icon else R.drawable.file_icon
+
+        holder.icon.setImageDrawable(ContextCompat.getDrawable(holder.itemView.context, fileIconRes))
+
+        holder.fileName.text = item.file.name
+        holder.additionalInfo.text = item.file.totalSpace.toString()
+
         holder.itemView.setOnClickListener {
             itemClickListener.onItemClickListener()
         }
     }
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = files.size
+
+    fun setFiles(files: List<ListModel>) {
+        this.files.clear()
+        this.files.addAll(files)
+        notifyDataSetChanged()
+    }
 }
