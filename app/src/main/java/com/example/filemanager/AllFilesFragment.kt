@@ -8,11 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,17 +28,16 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var binding: FragmentAllFilesBinding
     private lateinit var viewModel: AllFilesViewModel
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    companion object {
+        const val PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 333
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this, AllFilesViewModelFactory(applicationContext()))
             .get(AllFilesViewModel::class.java)
         adapter = ListAdapter(this)
-        if (!checkPermission()) {
-            showPermissionDialog();
-        } else {
-            viewModel.fetchFiles()
-        }
+        fetchFiles()
     }
 
     override fun onCreateView(
@@ -72,6 +71,14 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
     }
 
+    private fun fetchFiles() {
+        if (!checkPermission()) {
+            showPermissionDialog();
+        } else {
+            viewModel.fetchFiles()
+        }
+    }
+
     private fun showPermissionDialog() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
@@ -83,11 +90,14 @@ class AllFilesFragment : Fragment(), ItemClickListener {
                 val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                 activity?.startActivityForResult(intent, 2000)
             }
-        } else ActivityCompat.requestPermissions(
-            super.requireActivity(),
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
-            333
-        )
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE
+            )
+            Log.d("RequestPermission", "Requesting permission")
+        }
     }
 
     private fun checkPermission(): Boolean {
@@ -108,7 +118,9 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
-        if (requestCode == 333) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d("OnPermissionResult", "on permission result is here")
+        if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty()) {
                 val write = grantResults[0] == PackageManager.PERMISSION_GRANTED
                 val read = grantResults[1] == PackageManager.PERMISSION_GRANTED
