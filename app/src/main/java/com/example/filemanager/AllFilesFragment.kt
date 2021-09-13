@@ -85,29 +85,31 @@ class AllFilesFragment : Fragment(), ItemClickListener {
                     Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri
                 )
             )
-        } else requestPermissions(
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE
-        )
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE
+            )
+        }
     }
 
     private fun checkPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
         } else {
-            val write = ContextCompat.checkSelfPermission(
+            val writePermission = ContextCompat.checkSelfPermission(
                 applicationContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
-            write == PackageManager.PERMISSION_GRANTED
+            writePermission == PackageManager.PERMISSION_GRANTED
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         if (requestCode == PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty()) {
-                val write = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                if (write) {
+                val writePermission = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                if (writePermission) {
                     fetchFiles()
                 } else {
                     Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
