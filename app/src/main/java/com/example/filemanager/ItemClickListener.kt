@@ -1,5 +1,5 @@
 package com.example.filemanager
 
 interface ItemClickListener {
-    fun onItemClickListener()
+    fun onFileClick(file: ListModel)
 }

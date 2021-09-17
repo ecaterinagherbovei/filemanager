@@ -8,13 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,16 +26,33 @@ class AllFilesFragment : Fragment(), ItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this, AllFilesViewModelFactory(applicationContext()))
             .get(AllFilesViewModel::class.java)
         adapter = ListAdapter(this)
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, object
+            : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleBackPress()
+            }
+        })
+    }
+
+    private fun handleBackPress() {
+        if (viewModel.compareDirectories()) {
+            adapter.setFiles(viewModel.listParentDirectory())
+        } else {
+            updateOptionsMenu()
+            Toast.makeText(context, "Root folder", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAllFilesBinding.inflate(inflater, container, false)
         val layoutManager = LinearLayoutManager(context)
         binding.recyclerView.layoutManager = layoutManager
@@ -55,7 +70,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.files.observe(viewLifecycleOwner, Observer { files ->
+        viewModel.files.observe(viewLifecycleOwner, { files ->
             adapter.setFiles(files)
         })
     }
@@ -65,8 +80,38 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         fetchFiles()
     }
 
-    override fun onItemClickListener() {
-        Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        val menuItem = menu.findItem(R.id.back_button)
+        menuItem.isVisible = viewModel.compareDirectories()
+    }
+
+    private fun updateOptionsMenu() {
+        requireActivity().invalidateOptionsMenu()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.back_button -> {
+                handleBackPress()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onFileClick(file: ListModel) {
+        updateOptionsMenu()
+        if (file.file.isDirectory) {
+            viewModel.currentFile = file
+            adapter.setFiles(viewModel.listFiles(file))
+        } else {
+            Toast.makeText(context, "FILE", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun fetchFiles() {
