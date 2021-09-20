@@ -7,11 +7,11 @@ import androidx.lifecycle.ViewModel
 class AllFilesViewModel() : ViewModel() {
 
     val files = MutableLiveData<List<ListModel>>()
-    private val listRootDirectoryFiles: ListModel = ListModel(Environment.getExternalStorageDirectory())
-    var currentFile: ListModel? = listRootDirectoryFiles
+    private val rootDirectory: ListModel = ListModel(Environment.getExternalStorageDirectory())
+    var currentDirectory: ListModel = rootDirectory
 
-    fun fetchFiles() {
-        files.postValue(listFiles(listRootDirectoryFiles))
+    fun listRootDirectoryFiles() {
+        files.postValue(listFiles(rootDirectory))
     }
 
     fun listFiles(currentItem: ListModel): List<ListModel> {
@@ -21,12 +21,12 @@ class AllFilesViewModel() : ViewModel() {
     }
 
     fun listParentDirectory(): List<ListModel> {
-        val parentFile = currentFile?.file?.parentFile ?: return emptyList()
-        currentFile = ListModel(parentFile)
-        return listFiles(currentFile!!)
+        val parentDirectory = currentDirectory.parentDirectory() ?: return emptyList()
+        currentDirectory = ListModel(parentDirectory)
+        return listFiles(currentDirectory)
     }
 
     fun hasReachedRootFolder(): Boolean {
-        return currentFile!!.isRootDirectory()
+        return currentDirectory.isRootDirectory()
     }
 }

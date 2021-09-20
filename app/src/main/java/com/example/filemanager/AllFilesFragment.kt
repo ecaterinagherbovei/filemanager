@@ -28,13 +28,11 @@ class AllFilesFragment : Fragment(), ItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this, AllFilesViewModelFactory(applicationContext()))
             .get(AllFilesViewModel::class.java)
         adapter = ListAdapter(this)
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, object
-            : OnBackPressedCallback(true) {
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 handleBackPress()
             }
@@ -96,7 +94,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     override fun onFileClick(file: ListModel) {
         setToolbarNavigation()
         if (file.isDirectory()) {
-            viewModel.currentFile = file
+            viewModel.currentDirectory = file
             adapter.setFiles(viewModel.listFiles(file))
         } else {
             Toast.makeText(context, "FILE", Toast.LENGTH_SHORT).show()
@@ -107,7 +105,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         if (!checkPermission()) {
             showPermissionDialog()
         } else {
-            viewModel.fetchFiles()
+            viewModel.listRootDirectoryFiles()
         }
     }
 

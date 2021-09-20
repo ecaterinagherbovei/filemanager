@@ -11,4 +11,8 @@ data class ListModel(val file: File) {
     fun isRootDirectory(): Boolean {
         return file == Environment.getExternalStorageDirectory()
     }
+
+    fun parentDirectory(): File? {
+        return file.parentFile
+    }
 }
