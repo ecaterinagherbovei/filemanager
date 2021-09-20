@@ -8,7 +8,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -40,10 +42,10 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     }
 
     private fun handleBackPress() {
-        if (viewModel.compareDirectories()) {
+        if (!viewModel.hasReachedRootFolder()) {
             adapter.setFiles(viewModel.listParentDirectory())
         } else {
-            updateOptionsMenu()
+            hideToolbarNavigation()
             Toast.makeText(context, "Root folder", Toast.LENGTH_SHORT).show()
         }
     }
@@ -80,33 +82,20 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         fetchFiles()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-        val menuItem = menu.findItem(R.id.back_button)
-        menuItem.isVisible = viewModel.compareDirectories()
-    }
-
-    private fun updateOptionsMenu() {
-        requireActivity().invalidateOptionsMenu()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.back_button -> {
-                handleBackPress()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+    private fun setToolbarNavigation() {
+        binding.toolbar.setNavigationIcon(R.drawable.back_icon)
+        binding.toolbar.setNavigationOnClickListener {
+            handleBackPress()
         }
     }
 
+    private fun hideToolbarNavigation() {
+        binding.toolbar.navigationIcon = null
+    }
+
     override fun onFileClick(file: ListModel) {
-        updateOptionsMenu()
-        if (file.file.isDirectory) {
+        setToolbarNavigation()
+        if (file.isDirectory()) {
             viewModel.currentFile = file
             adapter.setFiles(viewModel.listFiles(file))
         } else {

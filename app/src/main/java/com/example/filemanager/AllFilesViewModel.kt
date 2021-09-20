@@ -3,16 +3,15 @@ package com.example.filemanager
 import android.os.Environment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.io.File
 
 class AllFilesViewModel() : ViewModel() {
 
     val files = MutableLiveData<List<ListModel>>()
-    private val rootDirectory: File = Environment.getExternalStorageDirectory()
-    var currentFile: ListModel? = ListModel(rootDirectory)
+    private val listRootDirectoryFiles: ListModel = ListModel(Environment.getExternalStorageDirectory())
+    var currentFile: ListModel? = listRootDirectoryFiles
 
     fun fetchFiles() {
-        files.postValue(listFiles(ListModel(rootDirectory)))
+        files.postValue(listFiles(listRootDirectoryFiles))
     }
 
     fun listFiles(currentItem: ListModel): List<ListModel> {
@@ -24,10 +23,10 @@ class AllFilesViewModel() : ViewModel() {
     fun listParentDirectory(): List<ListModel> {
         val parentFile = currentFile?.file?.parentFile ?: return emptyList()
         currentFile = ListModel(parentFile)
-        return listFiles(ListModel(parentFile))
+        return listFiles(currentFile!!)
     }
 
-    fun compareDirectories(): Boolean {
-        return currentFile?.file != rootDirectory
+    fun hasReachedRootFolder(): Boolean {
+        return currentFile!!.isRootDirectory()
     }
 }
