@@ -15,14 +15,12 @@ class AllFilesViewModel() : ViewModel() {
     }
 
     fun listFiles(currentItem: ListModel): List<ListModel> {
-        return currentItem.file.listFiles()?.map {
-            ListModel(it)
-        } ?: emptyList()
+        return currentItem.listFiles()
     }
 
     fun listParentDirectory(): List<ListModel> {
-        val parentDirectory = currentDirectory.parentDirectory() ?: return emptyList()
-        currentDirectory = ListModel(parentDirectory)
+        val parentDirectory = currentDirectory.parentDirectory()
+        currentDirectory = parentDirectory
         return listFiles(currentDirectory)
     }
 

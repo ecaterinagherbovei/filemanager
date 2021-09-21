@@ -12,7 +12,13 @@ data class ListModel(val file: File) {
         return file == Environment.getExternalStorageDirectory()
     }
 
-    fun parentDirectory(): File? {
-        return file.parentFile
+    fun parentDirectory(): ListModel {
+        return ListModel(file.parentFile)
+    }
+
+    fun listFiles(): List<ListModel> {
+        return file.listFiles().map {
+            ListModel(it)
+        }
     }
 }

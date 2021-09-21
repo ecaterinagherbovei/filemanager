@@ -13,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +22,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.filemanager.databinding.FragmentAllFilesBinding
+
 
 class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
@@ -81,14 +84,16 @@ class AllFilesFragment : Fragment(), ItemClickListener {
     }
 
     private fun setToolbarNavigation() {
-        binding.toolbar.setNavigationIcon(R.drawable.back_icon)
-        binding.toolbar.setNavigationOnClickListener {
+        val toolbar = activity?.findViewById<Toolbar>(R.id.toolbar)
+        (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar?.setNavigationOnClickListener {
             handleBackPress()
         }
     }
 
     private fun hideToolbarNavigation() {
-        binding.toolbar.navigationIcon = null
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onFileClick(file: ListModel) {
