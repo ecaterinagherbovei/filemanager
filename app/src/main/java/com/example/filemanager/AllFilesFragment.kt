@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -83,17 +82,19 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         fetchFiles()
     }
 
+    private fun getMainActivity(): MainActivity = requireActivity() as MainActivity
+
     private fun setToolbarNavigation() {
         val toolbar = activity?.findViewById<Toolbar>(R.id.toolbar)
-        (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
-        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        getMainActivity().setSupportActionBar(toolbar)
+        getMainActivity().supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar?.setNavigationOnClickListener {
             handleBackPress()
         }
     }
 
     private fun hideToolbarNavigation() {
-        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        getMainActivity().supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     override fun onFileClick(file: ListModel) {
