@@ -1,21 +1,30 @@
 package com.example.filemanager
 
 import android.os.Environment
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.io.File
 
 class AllFilesViewModel() : ViewModel() {
 
     val files = MutableLiveData<List<ListModel>>()
+    private val rootDirectory: ListModel = ListModel(Environment.getExternalStorageDirectory())
+    var currentDirectory: ListModel = rootDirectory
 
-    fun fetchFiles() {
-        val path = Environment.getExternalStorageDirectory().absolutePath ?: return
-        Log.d("PATH", path)
-        val files2 = File(path).listFiles()?.map {
-            ListModel(it)
-        } ?: emptyList()
-        files.postValue(files2)
+    fun listRootDirectoryFiles() {
+        files.postValue(listFiles(rootDirectory))
+    }
+
+    fun listFiles(currentItem: ListModel): List<ListModel> {
+        return currentItem.listFiles()
+    }
+
+    fun listParentDirectory(): List<ListModel> {
+        val parentDirectory = currentDirectory.parentDirectory()
+        currentDirectory = parentDirectory
+        return listFiles(currentDirectory)
+    }
+
+    fun hasReachedRootFolder(): Boolean {
+        return currentDirectory.isRootDirectory()
     }
 }

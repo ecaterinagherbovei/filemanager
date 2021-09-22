@@ -36,7 +36,7 @@ class ListAdapter(
         holder.additionalInfo.text = item.file.totalSpace.toString()
 
         holder.itemView.setOnClickListener {
-            itemClickListener.onItemClickListener()
+            itemClickListener.onFileClick(item)
         }
     }
 

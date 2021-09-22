@@ -12,14 +12,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.filemanager.databinding.FragmentAllFilesBinding
+
 
 class AllFilesFragment : Fragment(), ItemClickListener {
     private lateinit var adapter: ListAdapter
@@ -31,13 +33,28 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         viewModel = ViewModelProvider(this, AllFilesViewModelFactory(applicationContext()))
             .get(AllFilesViewModel::class.java)
         adapter = ListAdapter(this)
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                handleBackPress()
+            }
+        })
+    }
+
+    private fun handleBackPress() {
+        if (!viewModel.hasReachedRootFolder()) {
+            adapter.setFiles(viewModel.listParentDirectory())
+        } else {
+            hideToolbarNavigation()
+            Toast.makeText(context, "Root folder", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAllFilesBinding.inflate(inflater, container, false)
         val layoutManager = LinearLayoutManager(context)
         binding.recyclerView.layoutManager = layoutManager
@@ -55,7 +72,7 @@ class AllFilesFragment : Fragment(), ItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.files.observe(viewLifecycleOwner, Observer { files ->
+        viewModel.files.observe(viewLifecycleOwner, { files ->
             adapter.setFiles(files)
         })
     }
@@ -65,15 +82,36 @@ class AllFilesFragment : Fragment(), ItemClickListener {
         fetchFiles()
     }
 
-    override fun onItemClickListener() {
-        Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show()
+    private fun getMainActivity(): MainActivity = requireActivity() as MainActivity
+
+    private fun setToolbarNavigation() {
+        val toolbar = activity?.findViewById<Toolbar>(R.id.toolbar)
+        getMainActivity().setSupportActionBar(toolbar)
+        getMainActivity().supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar?.setNavigationOnClickListener {
+            handleBackPress()
+        }
+    }
+
+    private fun hideToolbarNavigation() {
+        getMainActivity().supportActionBar?.setDisplayHomeAsUpEnabled(false)
+    }
+
+    override fun onFileClick(file: ListModel) {
+        setToolbarNavigation()
+        if (file.isDirectory()) {
+            viewModel.currentDirectory = file
+            adapter.setFiles(viewModel.listFiles(file))
+        } else {
+            Toast.makeText(context, "FILE", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun fetchFiles() {
         if (!checkPermission()) {
             showPermissionDialog()
         } else {
-            viewModel.fetchFiles()
+            viewModel.listRootDirectoryFiles()
         }
     }
 
